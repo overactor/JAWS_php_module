@@ -65,14 +65,18 @@ public class PHPHandler {
 	public static HTTPResponse handle(HTTPRequest request, HTTPResponse response, File webroot) {
 		
 		try {
-			InputStream in = Runtime.getRuntime().exec("php/php.exe " + webroot + request.url()).getInputStream();
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			byte[] buffer = new byte[1024];
-			int len;
-			while ((len = in.read(buffer)) != -1) {
-			    out.write(buffer, 0, len);
+			if (new File(webroot + request.url()).exists()) {
+				InputStream in = Runtime.getRuntime().exec("php/php.exe " + webroot + request.url()).getInputStream();
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				byte[] buffer = new byte[1024];
+				int len;
+				while ((len = in.read(buffer)) != -1) {
+				    out.write(buffer, 0, len);
+				}
+				response.body(out);
+			} else {
+				response.body("<h1>404 - File not Found</h1>");
 			}
-			response.body(out);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
